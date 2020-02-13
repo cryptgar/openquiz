@@ -1,5 +1,5 @@
 # OpenQuiz
 
-A open quiz web application.
+An open quiz web application.
 
 https://en.wikipedia.org/wiki/Quiz
