@@ -6,9 +6,6 @@ import Home from "./components/Home";
 ReactDOM.render(
     <Router>
         <Home />
-        <Route exact path="/test/xd">
-            <p>lol</p>
-        </Route>
     </Router>,
     document.getElementById("root"),
 );
