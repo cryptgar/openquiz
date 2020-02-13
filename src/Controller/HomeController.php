@@ -8,7 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class HomeController extends AbstractController
 {
     /**
-     * @Route("/", name="home")
+     * @Route("/{reactRouting}", 
+     *  name="home", 
+     *  defaults={"reactRouting": null}, 
+     *  requirements={"reactRouting"="^(?!api(\/|$)).+"})
      */
     public function home() {
         return $this->render('home.html.twig');
