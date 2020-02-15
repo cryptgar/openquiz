@@ -2,9 +2,11 @@ import React from "react";
 import { createStyles, Theme, WithStyles, withStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
-import { Button, Card, CardContent } from "@material-ui/core";
+import { Button, Card, CardContent, ButtonGroup } from "@material-ui/core";
 import { Question } from "../interfaces/question.interface";
-import AddCircleIcon from "@material-ui/icons/AddCircle";
+import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const styles = (theme: Theme) =>
     createStyles({
@@ -31,6 +33,16 @@ class CreatePage extends React.Component<CreateProps, CreateState> {
         this.state = {
             questions: [],
         };
+    }
+
+    canCreate() {
+        if (this.state.questions.length == 0) return false;
+
+        for (const question of this.state.questions) {
+            if (question.invalidAnswers.length > 0) return true;
+        }
+
+        return false;
     }
 
     addEmptyQuestion() {
@@ -85,9 +97,26 @@ class CreatePage extends React.Component<CreateProps, CreateState> {
                             <TextField
                                 key={index}
                                 fullWidth
-                                label={`Wrong Answer ${index + 1}`}
+                                label={`Wrong Answer #${index + 1}`}
                                 className={this.props.classes.textfield}
                                 value={val}
+                                InputProps={{
+                                    endAdornment: (
+                                        <IconButton
+                                            aria-label="delete"
+                                            onClick={() => {
+                                                this.setState(state => {
+                                                    const newState = { ...state };
+                                                    newState.questions[i].invalidAnswers.splice(index, 1);
+
+                                                    return newState;
+                                                });
+                                            }}
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    ),
+                                }}
                                 onChange={event => {
                                     const value = event.target.value;
                                     this.setState(state => {
@@ -99,22 +128,34 @@ class CreatePage extends React.Component<CreateProps, CreateState> {
                                 }}
                             />
                         ))}
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<AddCircleIcon />}
-                            className={this.props.classes.addButton}
-                            onClick={() => {
-                                this.setState(state => {
-                                    const newState = { ...state };
-                                    newState.questions[i].invalidAnswers.push("");
+                        <ButtonGroup color="primary" aria-label="outlined primary button group">
+                            <Button
+                                className={this.props.classes.addButton}
+                                onClick={() => {
+                                    this.setState(state => {
+                                        const newState = { ...state };
+                                        newState.questions[i].invalidAnswers.push("");
 
-                                    return newState;
-                                });
-                            }}
-                        >
-                            Add Invalid Question
-                        </Button>
+                                        return newState;
+                                    });
+                                }}
+                            >
+                                Add Wrong Answer
+                            </Button>
+                            <Button
+                                className={this.props.classes.addButton}
+                                onClick={() => {
+                                    this.setState(state => {
+                                        const newState = { ...state };
+                                        newState.questions.splice(i, 1);
+
+                                        return newState;
+                                    });
+                                }}
+                            >
+                                Delete Question
+                            </Button>
+                        </ButtonGroup>
                     </CardContent>
                 </Card>,
             );
@@ -128,18 +169,22 @@ class CreatePage extends React.Component<CreateProps, CreateState> {
         return (
             <React.Fragment>
                 <Container>
+                    <Card className={this.props.classes.questionCard}>
+                        <CardContent>
+                            <Typography variant="h4" gutterBottom>
+                                Create a Quiz
+                            </Typography>
+                        </CardContent>
+                    </Card>
                     <form>{this.renderQuestionsInput()}</form>
-                    <Button
-                        variant="outlined"
-                        color="primary"
-                        className={classes.addButton}
-                        onClick={() => this.addEmptyQuestion()}
-                    >
-                        Add Question
-                    </Button>
-                    <Button variant="outlined" color="primary" className={classes.addButton}>
-                        Create
-                    </Button>
+                    <ButtonGroup color="primary">
+                        <Button className={classes.addButton} onClick={() => this.addEmptyQuestion()}>
+                            Add Question
+                        </Button>
+                        <Button disabled={!this.canCreate()} className={classes.addButton}>
+                            Create
+                        </Button>
+                    </ButtonGroup>
                 </Container>
             </React.Fragment>
         );
